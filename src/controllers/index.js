@@ -1,11 +1,7 @@
-const express = require('express')
 const sharp = require('sharp')
 const tesseract = require ('tesseract.js')
-const app = express()
 
-app.use(express.json({ limit: '10mb'}))
-
-app.post('/upload-image', async (request, response) => {
+module.exports.nubankController = async (request, response) => {
   try {
     const { imageBase64 } = request.body
   
@@ -43,9 +39,24 @@ app.post('/upload-image', async (request, response) => {
   } catch (error) {
     return response.status(500).json({ error: 'Error in analysis the receipt'})
   }
+}
 
-})
+module.exports.mercadoPagoController = async (request, response) => {
+  return response.json({ message: 'Mercado Pago' })
+}
 
-app.listen(3000, () => {
-  console.log('Server running at http://localhost:3000')
-})
+module.exports.picPayController = async (request, response) => {
+  return response.json({ message: 'picPay' })
+}
+
+module.exports.bradescoController = async (request, response) => {
+  return response.json({ message: 'Bradesco' })
+}
+
+module.exports.bancoDoBrasilController = async (request, response) => {
+  return response.json({ message: 'Banco do Brasil' })
+}
+
+module.exports.santanderController = async (request, response) => {
+  return response.json({ message: 'nubank' })
+}
