@@ -1,5 +1,6 @@
 const sharp = require('sharp')
 const tesseract = require ('tesseract.js')
+const { nubankValidation } = require('../validations')
 
 module.exports.nubankController = async (request, response) => {
   try {
@@ -23,16 +24,34 @@ module.exports.nubankController = async (request, response) => {
     const base64Data = imageBase64.replace(/^data:image\/\w+;base64,/, '')
   
     const imageBuffer = Buffer.from(base64Data, 'base64')
+    
+    const imageSizeInKb = Buffer.byteLength(imageBuffer) / 1024 
+  
+    if (imageSizeInKb > 500) {
+      return response.status(400).json({ error: 'image very large'})
+    }
+
     const processedImage = await sharp(imageBuffer).greyscale().toBuffer()
+    
     const result = await tesseract.recognize(processedImage, 'por', {
       logger: (m) => console.log(m)
     })
     const extractedText = result.data.text
 
-    const imageSizeInKb = Buffer.byteLength(imageBuffer) / 1024
-  
-    if (imageSizeInKb > 500) {
-      return response.status(400).json({ error: 'image very large'})
+    const lines = extractedText.split('\n').map(line => line.trim());
+    
+    if (lines && lines.length !== 36) {
+      return response.status(400).json({
+        message: 'Invalid Receipt'
+      })
+    }
+    
+    const txtIsValid = nubankValidation(extractedText)
+
+    if(!txtIsValid) {
+      return response.status(400).json({
+        message: 'Ivalid Receipt'
+      })
     }
   
     return response.status(200).json({ message: 'image received with success'})
