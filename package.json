@@ -7,6 +7,10 @@
     "start": "node src/app.js",
     "build": "echo build step is not required"
   },
+  "engines": {
+    "node": "14.21.3",
+    "npm": "6.14.18"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
