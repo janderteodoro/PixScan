@@ -54,7 +54,7 @@ module.exports.nubankController = async (request, response) => {
       })
     }
   
-    return response.status(200).json({ message: 'image received with success'})
+    return response.status(200).json({ message: 'receipt is valid'})
   } catch (error) {
     return response.status(500).json({ error: 'Error in analysis the receipt'})
   }
