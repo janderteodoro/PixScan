@@ -1,6 +1,10 @@
 const sharp = require('sharp')
 const tesseract = require ('tesseract.js')
 const { nubankValidation } = require('../validations')
+const { responseHandler: {
+  successResponse,
+  errorResponse,
+}} = require('../commons')
 
 module.exports.nubankController = async (request, response) => {
   try {
@@ -36,6 +40,7 @@ module.exports.nubankController = async (request, response) => {
     const result = await tesseract.recognize(processedImage, 'por', {
       logger: (m) => console.log(m)
     })
+
     const extractedText = result.data.text
 
     const lines = extractedText.split('\n').map(line => line.trim());
@@ -54,9 +59,17 @@ module.exports.nubankController = async (request, response) => {
       })
     }
   
-    return response.status(200).json({ message: 'receipt is valid'})
+    return successResponse({
+      response,
+      message: 'Receipt is valid',
+      statusCode: 200
+    })
   } catch (error) {
-    return response.status(500).json({ error: 'Error in analysis the receipt'})
+    return errorResponse({
+      response,
+      error: 'Error in analysis the receipt',
+      statusCode: 500
+    })
   }
 }
 
